@@ -1,0 +1,29 @@
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform/
+crash.log
+override.tf
+override.tf.json
+terraform.rc
+terraform.d/
+
+# Kubernetes files
+*.kubeconfig
+
+# Jenkins files
+secrets/
+config.xml
+*.log
+
+# General files
+*.log
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore sensitive files
+.env
+*.pem
+*.key
