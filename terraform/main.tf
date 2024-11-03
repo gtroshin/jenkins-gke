@@ -1,5 +1,3 @@
-// main.tf
-
 provider "google" {
   project = "jenkins-gke-demo-440609"
   region  = "us-central1"
