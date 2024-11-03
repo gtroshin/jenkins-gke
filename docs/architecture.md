@@ -22,3 +22,22 @@ This project sets up a highly automated and scalable CI/CD infrastructure on Goo
 * Service Configuration: Jenkins is exposed via a LoadBalancer service.
 * Firewall Rules: Ensure that necessary ports are open for Jenkins and JNLP communication.
 * Role and Role Binding: Configured to allow Jenkins to manage pods within the cluster.
+
+```mermaid
+graph TD;
+A[Jenkins Master Node] -->|HTTP Port 8080| B[LoadBalancer Service]
+A -->|JNLP Port 50000| B
+B --> C[GKE Cluster]
+C --> D[Linux Node Pool]
+D --> E[Jenkins Build Agents]
+E -->|Dynamic Scaling| F[On-Demand Cloud Agents]
+F -->|Network Flow| G[External Repositories]
+G -->|Triggers| A
+subgraph Networking
+B
+C
+end
+subgraph Storage
+A --> H[PersistentVolumeClaim]
+end
+```
