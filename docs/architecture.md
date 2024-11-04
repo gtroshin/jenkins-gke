@@ -24,20 +24,23 @@ This project sets up a highly automated and scalable CI/CD infrastructure on Goo
 * Role and Role Binding: Configured to allow Jenkins to manage pods within the cluster.
 
 ```mermaid
-graph TD;
-A[Jenkins Master Node] -->|HTTP Port 8080| B[LoadBalancer Service]
-A -->|JNLP Port 50000| B
-B --> C[GKE Cluster]
-C --> D[Linux Node Pool]
-D --> E[Jenkins Build Agents]
-E -->|Dynamic Scaling| F[On-Demand Cloud Agents]
-F -->|Network Flow| G[External Repositories]
-G -->|Triggers| A
-subgraph Networking
-B
-C
-end
-subgraph Storage
-A --> H[PersistentVolumeClaim]
-end
+graph TD
+    Users((Users)) <--> LB
+    BA((Build Agents)) <--> LB
+    
+    subgraph GKECluster[GKE Cluster]
+        LB[LoadBalancer ports 8080, 50000] <--> JM[Jenkins Master Pod]
+        JM --> PVC[(PersistentVolumeClaim)]
+        
+        subgraph NodePool[Node Pool]
+            JM <--> BA
+        end
+        
+        subgraph RBACConfig[RBAC]
+            Role[Role] --> RoleBinding
+            RoleBinding --> JM
+        end
+    end
+    
+    Repos((External Repos)) <--> LB
 ```
