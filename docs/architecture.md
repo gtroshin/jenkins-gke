@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project sets up a highly automated and scalable CI/CD infrastructure on Google Cloud Platform (GCP) using Jenkins as the primary CI/CD tool. The infrastructure is designed to dynamically scale Jenkins agents based on workload demands, using Google Kubernetes Engine (GKE) to orchestrate auto-scaling, and to support both Linux and Windows (soon) build environments. The CI/CD pipeline can be triggered by code changes in Perforce or GitHub, with Jenkins managing the end-to-end build, test, and deployment workflows.
+This project sets up a highly automated and scalable CI/CD infrastructure on Google Cloud Platform (GCP) using Jenkins as the primary CI/CD tool. The infrastructure is designed to dynamically scale Jenkins agents based on workload demands, using Google Kubernetes Engine (GKE) to orchestrate auto-scaling. The CI/CD pipeline is configured to be triggered by code changes in GitHub, with Jenkins managing the end-to-end build, test, and deployment workflows using Configuration as Code (JCasC).
 
 ## Components of the Architecture
 
@@ -14,14 +14,31 @@ This project sets up a highly automated and scalable CI/CD infrastructure on Goo
 
 ### 2. Jenkins Deployment
 
-* Deployment Configuration: Jenkins is deployed as a Kubernetes deployment.
-* Persistent Storage: A PersistentVolumeClaim is used to ensure data persistence.
+* Configuration as Code: Jenkins is configured using JCasC (Jenkins Configuration as Code)
+* Security: Configured with matrix-based security and local user authentication
+* Plugins: Managed through a ConfigMap, including essential plugins for Kubernetes integration, GitHub, and pipeline support
+* Persistent Storage: Uses PVC for data persistence
+* Build Agents: Dynamically provisioned Kubernetes pods using the jenkins/inbound-agent image
 
 ### 3. Networking
 
-* Service Configuration: Jenkins is exposed via a LoadBalancer service.
-* Firewall Rules: Ensure that necessary ports are open for Jenkins and JNLP communication.
-* Role and Role Binding: Configured to allow Jenkins to manage pods within the cluster.
+* Service Configuration: Jenkins is exposed via a LoadBalancer service on ports 8080 (web UI) and 50000 (JNLP)
+* Internal Communication: Uses Kubernetes service discovery for agent communication
+* Role and Role Binding: RBAC configured to allow Jenkins to manage pods within the cluster
+
+### 4. Security
+
+* Authentication: Local user authentication with matrix-based authorization
+* Credentials: Managed through Kubernetes secrets for GitHub integration
+* CSRF Protection: Enabled by default
+* API Token Management: Controlled through security settings
+* Build Isolation: All builds run on ephemeral Kubernetes agents
+
+### 5. Pipeline Configuration
+
+* Job DSL: Automated job creation using Job DSL scripts
+* GitHub Integration: Configured with webhook triggers for automated builds
+* Build Agents: Dynamically provisioned with specified resource limits and container configurations
 
 ```mermaid
 graph TD
