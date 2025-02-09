@@ -48,7 +48,7 @@ data:
                       url('https://github.com/gtroshin/sample-repo.git')
                       credentials('github-credentials')
                     }
-                    branch('*/main')
+                    branch('*/master')
                   }
                 }
                 lightweight(true)

@@ -6,3 +6,5 @@ kubernetes-credentials:latest
 credentials:latest
 cloudbees-folder:latest
 job-dsl:latest
+git-client:latest
+github:latest
