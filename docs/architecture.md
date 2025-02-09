@@ -49,6 +49,12 @@ graph TD
         LB[LoadBalancer ports 8080, 50000] <--> JM[Jenkins Master Pod]
         JM --> PVC[(PersistentVolumeClaim)]
         
+        subgraph Config[Configuration]
+            JCasC[JCasC ConfigMap] --> JM
+            Plugins[Plugins ConfigMap] --> JM
+            Secrets[GitHub Secrets] --> JM
+        end
+        
         subgraph NodePool[Node Pool]
             JM <--> BA
         end
@@ -59,5 +65,5 @@ graph TD
         end
     end
     
-    Repos((External Repos)) <--> LB
+    GitHub((GitHub Repos)) <--> LB
 ```
