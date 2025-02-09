@@ -12,6 +12,7 @@
          labels:
            app: jenkins
        spec:
+         serviceAccountName: default
          initContainers:
          - name: init-permissions
            image: busybox
@@ -19,15 +20,72 @@
            volumeMounts:
            - name: jenkins-data
              mountPath: /var/jenkins_home
+         - name: jenkins-plugin-installation
+           image: jenkins/jenkins:lts
+           command:
+           - sh
+           - -c
+           - |
+             cp /var/jenkins_home/plugins.txt /usr/share/jenkins/ref/plugins.txt
+             jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
+           volumeMounts:
+           - name: jenkins-plugins
+             mountPath: /var/jenkins_home/plugins.txt
+             subPath: plugins.txt
+           - name: plugin-dir
+             mountPath: /usr/share/jenkins/ref/plugins
          containers:
          - name: jenkins
            image: jenkins/jenkins:lts
+           resources:
+             requests:
+               cpu: "500m"
+               memory: "1Gi"
+             limits:
+               cpu: "2000m"
+               memory: "2Gi"
+           readinessProbe:
+             httpGet:
+               path: /login
+               port: 8080
+             initialDelaySeconds: 60
+             timeoutSeconds: 5
+             failureThreshold: 12
            ports:
            - containerPort: 8080
+           - containerPort: 50000
+           env:
+           - name: JENKINS_HOME
+             value: /var/jenkins_home
+           - name: JAVA_OPTS
+             value: >-
+               -Djenkins.install.runSetupWizard=true
+               -Djenkins.model.Jenkins.slaveAgentPort=50000
+               -Dhudson.model.DownloadService.noSignatureCheck=true
+               -Dcasc.jenkins.config=/var/jenkins_home/casc_configs/jenkins.yaml
+           - name: JENKINS_OPTS
+             value: --argumentsRealm.roles.user=admin --argumentsRealm.passwd.admin=admin
+           - name: CASC_JENKINS_CONFIG
+             value: /var/jenkins_home/casc_configs/jenkins.yaml
            volumeMounts:
            - name: jenkins-data
              mountPath: /var/jenkins_home
+           - name: jenkins-config
+             mountPath: /var/jenkins_home/casc_configs
+           - name: jenkins-plugins
+             mountPath: /var/jenkins_home/plugins.txt
+             subPath: plugins.txt
+           - name: plugin-dir
+             mountPath: /usr/share/jenkins/ref/plugins
          volumes:
          - name: jenkins-data
            persistentVolumeClaim:
              claimName: jenkins-pvc
+         - name: jenkins-config
+           configMap:
+             name: jenkins-configuration
+         - name: jenkins-plugins
+           configMap:
+             name: jenkins-plugins
+         - name: plugin-dir
+           emptyDir: {}

@@ -1,0 +1,7 @@
+kubernetes:latest
+configuration-as-code:latest
+workflow-aggregator:latest
+git:latest
+kubernetes-credentials:latest
+credentials:latest
+cloudbees-folder:latest
