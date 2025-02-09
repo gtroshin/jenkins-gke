@@ -5,6 +5,17 @@ metadata:
 data:
   jenkins.yaml: |
     jenkins:
+      securityRealm:
+        local:
+          allowsSignup: false
+          users:
+            - id: "admin"
+              password: "admin"
+      authorizationStrategy:
+        globalMatrix:
+          permissions:
+            - "Overall/Administer:admin"
+            - "Overall/Read:authenticated"
       systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
       clouds:
         - kubernetes:

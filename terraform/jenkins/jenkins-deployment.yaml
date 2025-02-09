@@ -59,12 +59,10 @@
              value: /var/jenkins_home
            - name: JAVA_OPTS
              value: >-
-               -Djenkins.install.runSetupWizard=true
+               -Djenkins.install.runSetupWizard=false
                -Djenkins.model.Jenkins.slaveAgentPort=50000
                -Dhudson.model.DownloadService.noSignatureCheck=true
                -Dcasc.jenkins.config=/var/jenkins_home/casc_configs/jenkins.yaml
-           - name: JENKINS_OPTS
-             value: --argumentsRealm.roles.user=admin --argumentsRealm.passwd.admin=admin
            - name: CASC_JENKINS_CONFIG
              value: /var/jenkins_home/casc_configs/jenkins.yaml
            - name: GITHUB_USERNAME
