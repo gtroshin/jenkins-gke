@@ -22,30 +22,36 @@ data:
                 containers:
                   - name: "jnlp"
                     image: "jenkins/inbound-agent:latest"
-      credentials:
-        system:
-          domainCredentials:
-            - credentials:
-              - usernamePassword:
-                  scope: GLOBAL
-                  id: github-credentials
-                  username: ${GITHUB_USERNAME}
-                  password: ${GITHUB_TOKEN}
-      jobs:
-        - script: >
-            pipelineJob('sample-repo') {
-              definition {
-                cpsScm {
-                  scm {
-                    git {
-                      remote {
-                        url('https://github.com/gtroshin/sample-repo.git')
-                        credentials('github-credentials')
-                      }
-                      branch('*/main')
+    unclassified:
+      location:
+        url: http://jenkins:8080/
+    security:
+      globalJobDslSecurityConfiguration:
+        useScriptSecurity: false
+    credentials:
+      system:
+        domainCredentials:
+          - credentials:
+            - usernamePassword:
+                scope: GLOBAL
+                id: github-credentials
+                username: ${GITHUB_USERNAME}
+                password: ${GITHUB_TOKEN}
+    jobs:
+      - script: >
+          pipelineJob('sample-repo') {
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote {
+                      url('https://github.com/gtroshin/sample-repo.git')
+                      credentials('github-credentials')
                     }
+                    branch('*/main')
                   }
-                  lightweight(true)
                 }
+                lightweight(true)
               }
             }
+          }

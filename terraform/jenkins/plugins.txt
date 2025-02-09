@@ -5,3 +5,4 @@ git:latest
 kubernetes-credentials:latest
 credentials:latest
 cloudbees-folder:latest
+job-dsl:latest
