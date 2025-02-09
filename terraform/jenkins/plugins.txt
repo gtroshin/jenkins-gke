@@ -8,3 +8,5 @@ cloudbees-folder:latest
 job-dsl:latest
 git-client:latest
 github:latest
+workflow-basic-steps:latest
+github-branch-source:latest

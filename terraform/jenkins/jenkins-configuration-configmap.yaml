@@ -40,6 +40,9 @@ data:
     jobs:
       - script: >
           pipelineJob('sample-repo') {
+            triggers {
+              githubPush()
+            }
             definition {
               cpsScm {
                 scm {
