@@ -1,5 +1,5 @@
 provider "google" {
-  project = "jenkins-gke-demo-440609"
+  project = "jenkins-k8s-demo"
   region  = "us-central1"
 }
 
@@ -49,5 +49,5 @@ output "cluster_location" {
 }
 
 output "project_id" {
-  value = "jenkins-gke-demo-440609"
+  value = "jenkins-k8s-demo"
 }

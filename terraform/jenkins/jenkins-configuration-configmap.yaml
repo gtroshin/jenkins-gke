@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-configuration
+data:
+  jenkins.yaml: |
+    jenkins:
+      securityRealm:
+        local:
+          allowsSignup: false
+          users:
+            - id: "admin"
+              password: "admin"
+      authorizationStrategy:
+        globalMatrix:
+          permissions:
+            - "Overall/Administer:admin"
+            - "Overall/Read:authenticated"
+      systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+      clouds:
+        - kubernetes:
+            name: "kubernetes"
+            serverUrl: "https://kubernetes.default"
+            jenkinsUrl: "http://jenkins:8080"
+            jenkinsTunnel: "jenkins:50000"
+            containerCapStr: "10"
+            maxRequestsPerHostStr: "32"
+            namespace: "default"
+            templates:
+              - name: "jenkins-agent"
+                namespace: "default"
+                label: "jenkins-agent"
+                containers:
+                  - name: "jnlp"
+                    image: "jenkins/inbound-agent:latest"
+    unclassified:
+      location:
+        url: http://jenkins:8080/
+    security:
+      globalJobDslSecurityConfiguration:
+        useScriptSecurity: false
+    credentials:
+      system:
+        domainCredentials:
+          - credentials:
+            - usernamePassword:
+                scope: GLOBAL
+                id: github-credentials
+                username: ${GITHUB_USERNAME}
+                password: ${GITHUB_TOKEN}
+    jobs:
+      - script: >
+          pipelineJob('sample-repo') {
+            triggers {
+              githubPush()
+            }
+            definition {
+              cpsScm {
+                scm {
+                  git {
+                    remote {
+                      url('https://github.com/gtroshin/sample-repo.git')
+                      credentials('github-credentials')
+                    }
+                    branch('*/master')
+                  }
+                }
+                lightweight(true)
+              }
+            }
+          }
